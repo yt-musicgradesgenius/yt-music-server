@@ -381,12 +381,11 @@ def get_play_url(video_id):
         return jsonify({"error": f"Failed to fetch video: {str(e)}"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-import requests
 
-@app.route("/myip")
+@app.route("/")
 def myip():
-    ip = requests.get("https://ifconfig.me", timeout=5).text
-    return jsonify({"ip_seen_by_websites": ip})
+    
+    return jsonify({"Home Page" })
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
