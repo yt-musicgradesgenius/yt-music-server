@@ -1,13 +1,17 @@
-run = "python3 main.py"
+# replit.toml
+
+[unit]
+# Command to run your Flask app
+command = "python3 app.py"
 
 [env]
-PYTHONUNBUFFERED = "1"
+# Flask must run on 0.0.0.0 and use Replit's PORT environment variable
+FLASK_RUN_HOST = "0.0.0.0"
+FLASK_RUN_PORT = "$PORT"
 
-[packager]
-  [packager.pip]
-  install = ["-r", "requirements.txt"]
-
-[deployment]
-# Expose port 5000 since Flask runs there
-  run = ["python3", "main.py"]
-  env = { PORT = "5000", HOST = "0.0.0.0" }
+[packager.pip]
+# List the Python packages your app needs
+packages = [
+    "flask",
+    "requests"   # Add any other packages your app uses
+]
