@@ -1,10 +1,8 @@
-from flask import Flask, jsonify, Response, stream_with_context
-
+from flask import Flask, jsonify
 import requests
 import time
 import yt_dlp
 import random
-
 import json
 import os
 
@@ -191,7 +189,7 @@ def get_play_url(video_id):
             "format": "best[ext=mp4]/best",
             "quiet": True,
             "noplaylist": True,
-            "cookiefile": "cookies.txt"
+            "cookiefile":"cookies.txt"
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -202,20 +200,11 @@ def get_play_url(video_id):
             if not stream_url:
                 return jsonify({"error": "No playable stream found"}), 404
 
-        def generate():
-            with requests.get(stream_url, stream=True) as r:
-                r.raise_for_status()
-                for chunk in r.iter_content(chunk_size=1024*16):
-                    if chunk:
-                        yield chunk
-
-        return Response(
-            stream_with_context(generate()),
-            content_type="video/mp4",
-            headers={
-                "Content-Disposition": f"inline; filename={video_id}.mp4"
-            }
-        )
+        return jsonify({
+            "video_id": video_id,
+            "title": info.get("title"),
+            "stream_url": stream_url,
+        }), 200
 
     except yt_dlp.utils.DownloadError as e:
         return jsonify({"error": f"Failed to fetch video: {str(e)}"}), 404
@@ -237,4 +226,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     # Use debug=False for production deployments
     debug_mode = os.environ.get("FLASK_ENV") == "development"
-    app.run(host="0.0.0.0", port=port, debug=debug_mode)
+    app.run(host="0.0.0.0", port=port, debug=debug_mode) 
